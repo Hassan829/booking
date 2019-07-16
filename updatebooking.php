@@ -12,7 +12,6 @@ require "includes/functions.php";
 			$adults = $_POST['adults'];
 			$child = $_POST['child'];
 			$reservationTime = $_POST['reservationTime'];
-			$formType = $_POST['formType'];
 			$note = $_POST['note'];
 			$address = "";			
 			$perHeadCharges = "";
@@ -22,19 +21,19 @@ require "includes/functions.php";
 			$paymentMode = "";
 			$zone = "";	
 			$status = 0;
-			if($formType == 2){
-				$address = $_POST['address'];
-				$perHeadCharges = $_POST['perHeadCharges'];
-				$deposite = $_POST['deposite'];
-				$totalAmount = $_POST['totalAmount'];
-				$minimumPayment = $_POST['minimumPayment'];
-				$paymentMode = $_POST['paymentMode'];
-				$zone = $_POST['zone'];
-			}
+			$address = $_POST['address'];
+			$perHeadCharges = $_POST['perHeadCharges'];
+			$deposite = $_POST['deposite'];
+			$totalAmount = $_POST['totalAmount'];
+			$minimumPayment = $_POST['minimumPayment'];
+			$paymentMode = $_POST['paymentMode'];
+			$zone = $_POST['zone'];
+			$bookingId = $_POST['bookingId'];
+			
 			$getAvailableSeats = getAvailableSeats($_POST['reservationDate']); 
 			$seatsAvailablityCheck = $getAvailableSeats + $persons;
 			if($seatsAvailablityCheck <= 600 ){
-				echo $response = addBooking($customerName,$contactNo,$address,$reservationDate,$persons,$adults,$child,$reservationTime,$perHeadCharges,$deposite,$totalAmount,$minimumPayment,$paymentMode,$zone,$status,$note);
+				echo $response = updateBooking($bookingId, $customerName,$contactNo,$address,$reservationDate,$persons,$adults,$child,$reservationTime,$perHeadCharges,$deposite,$totalAmount,$minimumPayment,$paymentMode,$zone,$note);
 			}else{
 				$availableSeat = 600-$getAvailableSeats;
 				$response = "Sorry booking can't complete. Only ".$availableSeat. " of seats is/are left.";

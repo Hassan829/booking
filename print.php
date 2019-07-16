@@ -43,14 +43,15 @@ if(isset($_GET['bookingId']) && $_GET['bookingId'] > 0 ){
     <!-- Logo -->
     <a href="../../index2.html" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>A</b>LT</span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Admin</b>LTE</span>
+      <span class="logo-mini">RS</span>
+        <span class="logo-lg">Reservation System</span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
       <!-- Sidebar toggle button-->
-      
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
     </nav>
   </header>
   <!-- Left side column. contains the logo and sidebar -->
@@ -59,9 +60,11 @@ if(isset($_GET['bookingId']) && $_GET['bookingId'] > 0 ){
     <section class="sidebar">
       <!-- Sidebar user panel -->
        <div class="user-panel">
-     
-        <div class="text-center">
-          <p style="color: white;">Admin</p>
+        <div class="pull-left image">
+          <img src="dist/img/avatar5.png" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p style="color: white; text-transform: uppercase;"><?php echo $_SESSION['userRoleName']; ?></p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -89,6 +92,20 @@ if(isset($_GET['bookingId']) && $_GET['bookingId'] > 0 ){
         <li>
           <a href="reviewlist.php">
             <i class="fa fa-list"></i> <span>Reviews List</span>
+           
+          </a>
+        </li>
+        <?php if($_SESSION['userRole'] == 1) {?>
+        <li>
+          <a href="notes.php">
+            <i class="fa fa-list"></i> <span>Notes</span>
+           
+          </a>
+        </li>
+        <?php }?>
+        <li>
+          <a href="logout.php">
+            <i class="fa fa-sign-out"></i> <span>Logout</span>
            
           </a>
         </li>
@@ -244,7 +261,7 @@ if(isset($_GET['bookingId']) && $_GET['bookingId'] > 0 ){
     <div class="pull-right hidden-xs">
       <b>Version</b> 1
     </div>
-    <strong>Copyright &copy; 2019 <a href="https://devleadz.com">DevLeadz (Pvt) Ltd.</a></strong> All rights
+    <strong>Copyright &copy; 2019 <!-- <a href="https://devleadz.com">DevLeadz (Pvt) Ltd.</a> --></strong> All rights
     reserved.
   </footer>
 

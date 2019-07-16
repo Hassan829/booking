@@ -1,9 +1,11 @@
 <?php
 require "includes/functions.php";
-if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){ 
- $reviewList =[];
+if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole']) && $_SESSION['userRole'] == 1 && $_GET['bookingId'] &&
+ $_GET['bookingId'] > 0){ 
 
-  $reviewList = getReviews();
+$bookingDetails = getBookingById( $_GET['bookingId'] );
+
+
 
 ?>
 <!DOCTYPE html>
@@ -21,7 +23,7 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
   <!-- Ionicons -->
   <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css">
   <link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
- <link rel="stylesheet" type="text/css" href="plugins/iCheck/all.css">
+ 
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -69,7 +71,7 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
-    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+     <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
         <span class="sr-only">Toggle navigation</span>
       </a>
     </nav>
@@ -150,121 +152,135 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-       Reviews List
+       Edit Booking Details
       </h1>
   
     </section>
 
     <!-- Main content -->
     <section class="content">
-
-      <!-- Default box -->
       <div class="box">
-        <div class="box-header with-border">
+        <form class="form-horizontal" action="" method="post">
           
-        </div>
-        <!-- <div class="box-body">
-          <div class="row">
-          <div class="col-sm-12">
-            <form action="bookinglist.php" method="GET">
-            <div class="form-group">
-              <label for="reservationDate" class="col-sm-2 control-label">Reservation Date</label>
-              <div class="col-sm-2">
-                <input type="date" class="form-control" id="reservationDate" name="reservationDate" placeholder="Contact Detail">
-              </div>
-  
+                        <div class="box-body">
+                          <div class="form-group">
+                            <label for="customerName" class="col-sm-3 control-label">Customer Name</label>
+          
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" name="customerName" id="customerName" placeholder="Customer Name "  value="<?php echo $bookingDetails->customername; ?>">
+                              <input type="hidden" class="form-control" name="bookingId" id="bookingId"   value="<?php echo $bookingDetails->bookingid; ?>" >
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="contactDetails" class="col-sm-3 control-label">Contact Detail</label>
+          
+                            <div class="col-sm-9">
+                              <input type="number" class="form-control" id="contactNo" name="contactNo" placeholder="Contact Detail" value="<?php echo $bookingDetails->contactno; ?>">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="address" class="col-sm-3 control-label">Address</label>
+          
+                            <div class="col-sm-9">
+                              <input type="text" class="form-control" id="address" name="address" placeholder="Address" value="<?php echo $bookingDetails->address; ?>">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="reservationDate" class="col-sm-3 control-label">Reservation Date</label>
+          
+                            <div class="col-sm-3">
+                              <input type="date" class="form-control" id="reservationDate" name="reservationDate" placeholder="Contact Detail" value="<?php echo $bookingDetails->reservationdate; ?>">
+                            </div>
+                             <label for="reservationTimeE" class="col-sm-3 control-label">Reservation Time</label>
+          
+                            <div class="col-sm-3">
+                              <input type="time" class="form-control" id="reservationTime" name="reservationTime" placeholder="Reservation Time" value="<?php echo $bookingDetails->reservationtime; ?>">
+                            </div>
 
-              <label for="reservationDate" class="col-sm-1 control-label">Status</label>
-              <div class="col-sm-2">
-              <select class="form-control"  name="status" id="status">
-                          <option value="-1">All</option>
-                      <?php  foreach($statusList as $status): ?>
-                          <option value="<?php echo $status->statusid;?>">  <?php echo $status->value; ?></option>
-
-                      <?php  endforeach; ?>
-                  </select>
-                </div>
-
-                <label for="phone" class="col-sm-1 control-label">Phone#</label>
-              <div class="col-sm-2">
-                <input type="tel" class="form-control " id="phone" name="phone" placeholder="Phone Number">
-              </div>
-                 <div class="col-sm-2">
-                 <input type="submit" class="btn btn-info" name="submit" value="Submit">
-                 </div>
-
-             </div>
-
-             
-            </form>
-            </div>
-          </div>
-        </div> -->
-     
-        <!-- Table start -->
-
-          <div class="box">
-
-            <!-- /.box-header -->
-            <div class="box-body">
-              <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                  <th>Sr. No.</th>
-                  <th>Name</th>
-                  <th>Phone No</th>
-                  <th>Food, Taste & Quality</th>
-                  <th>Hygiene & standards</th>
-                  <th>Staff & Management</th>
-                 
-                </tr>
-                </thead>
-                <tbody>
-                   <?php  $counter = 1 ;
-                   if(1==1){
-                      foreach($reviewList as $review):?>
-                        <tr>
-                            <td> <?php echo $counter; ?> </td>
-                            <td> <?php echo $review->customername; ?> </td>
-                            <td> <?php echo $review->contactno; ?> </td>
-                            <td> <?php echo $review->foodtastequality; ?> </td>
-                            <td> <?php echo $review->hygienestandards; ?></td>
-                            <td> <?php echo $review->staffmanagement?></td>                          
                             
-                        </tr>
-                        <?php
-                      $counter++ ;
-                     endforeach; 
-                   }?>
+                          </div>
+                          <div class="form-group">
+                           
+                            <label for="person" class="col-sm-3 control-label">Person</label>
+          
+                            <div class="col-sm-3">
+                              <input type="text" onkeypress="return numbers()" class="form-control" id="persons" name="persons" placeholder="Total Persons" value="<?php echo $bookingDetails->persons; ?>">
+                            </div>
+                            <label for="Adults" class="col-sm-3 control-label">Adults</label>
+          
+                            <div class="col-sm-3">
+                              <input type="text" class="form-control" id="adults" name="adults" placeholder="Adults" value="<?php echo $bookingDetails->adults; ?>">
+                            </div>
 
-                </tbody>
-              
-                <tfoot>
-                <tr>
-                  <th>Sr. No.</th>
-                  <th>Name</th>
-                  <th>Phone No</th>
-                  <th>Food, Taste & Quality</th>
-                  <th>Hygiene & standards</th>
-                  <th>Staff & Management</th>
+                          </div>
+                          <div class="form-group">
 
-                </tr>
-                </tfoot>
-              </table>
-            </div>
-            <!-- /.box-body -->
-          </div>
-        <!-- Table END -->
-        <!-- /.box-body -->
-        <div class="box-footer">
-          <!-- Display the countdown timer in an element -->
+                          <label for="person" class="col-sm-3 control-label">Childern</label>
+          
+                            <div class="col-sm-3">
+                          <input type="text" class="form-control" id="child" name="child" placeholder="Childern" value="<?php echo $bookingDetails->child; ?>">
+                          </div>
+                      </div>
+                          <div class="form-group">
+                            <label for="perHeadCharges" class="col-sm-3 control-label">Per Head charges</label>
+          
+                            <div class="col-sm-4">
+                              <input type="number" class="form-control" id="perHeadCharges" name="perHeadCharges" placeholder="Per Head charges" value="<?php echo $bookingDetails->perheadcharges; ?>">
+                            </div>
 
+                            <label for="totalAmount" class="col-sm-2 control-label">Total Amount</label>
+          
+                            <div class="col-sm-3">
+                              <input type="number" class="form-control" id="totalAmount" namr="totalAmount" placeholder="Total Amount" value="<?php echo $bookingDetails->totalamount; ?>">
+                            </div>
+                          </div>
+                       
+                          <div class="form-group">
+                            <label for="minimumPayment" class="col-sm-3 control-label">Minimum Payment</label>
+          
+                            <div class="col-sm-4">
+                              <input type="number" class="form-control" id="minimumPayment" name="minimumPayment" placeholder="Minimum Payment" value="<?php echo $bookingDetails->minimumpayment; ?>">
+                            </div>
+                            <label for="deposite" class="col-sm-2 control-label">Deposit</label>
+          
+                            <div class="col-sm-3">
+                              <input type="number" class="form-control" id="deposite" name="deposite" placeholder="deposit" value="<?php echo $bookingDetails->deposite; ?>">
+                            </div>
 
+                            
+                          </div>
 
-        </div>
-        <!-- /.box-footer-->
+                          <div class="form-group">
+                            <label for="paymentMode" class="col-sm-3 control-label">Mode Payement</label>
+          
+                            <div class="col-sm-3">
+                              <input type="number" class="form-control" id="paymentMode" name="paymentMode" placeholder="Mode Payement" value="<?php echo $bookingDetails->paymentmode; ?>">
+                            </div>
+                            <label for="zone" class="col-sm-3 control-label">Zone</label>
+          
+                            <div class="col-sm-3">
+                              <input type="text" class="col-sm-3 form-control" id="zone" name="zone" placeholder="Zone" value="<?php echo $bookingDetails->zone; ?>">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="note" class="col-sm-3 control-label">Note</label>
+                            <div class="col-sm-9">
+                               <textarea class="form-control" rows="5" id="note" name="note" ><?php echo $bookingDetails->note; ?></textarea>
+                          </div>
+                        </div>
+                      
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                          <!-- <button type="cancel"  data-dismiss="modal" class="btn btn-default">Cancel</button> -->
+                          <button type="button" name="submit" onclick="updateBooking();" id="submit" class="btn btn-info pull-right">Save Changes</button>
+                        </div>
+                        <!-- /.box-footer -->
+                        
+                      </form>
+                    
+
       </div>
-      <!-- /.box -->
 
     </section>
     <!-- /.content -->
@@ -505,6 +521,100 @@ https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js
 
 
 
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#example1').DataTable( {
+   
+        dom: 'Bfrtip',
+        buttons: [
+{ "extend": 'print', "text":'<i class="fa fa-print"></i>',"className": 'btn btn-default pull-left' }
+
+        ]
+    } );
+} );
+</script>
+
+<script>
+  $(document).ready(function () {
+    $('.sidebar-menu').tree()
+  })
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#example').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'print'
+        ]
+    } );
+} );
+</script>
+
+<script>
+
+     function updateBooking(){
+  var  bookingId = $("input#bookingId").val();
+  var  customerName = $("input#customerName").val();
+  var  contactNo = $("input#contactNo").val();
+  var address = $("input#address").val();
+  var reservationDate = $("input#reservationDate").val();
+  var persons = $("input#persons").val();
+  var reservationTime = $("input#reservationTime").val();
+  var totalAmount = $("input#totalAmount").val();
+  var minimumPayment = $("input#minimumPayment").val();
+  var paymentMode = $("input#paymentMode").val();
+  var zone = $("input#zone").val();
+  var perHeadCharges = $("input#perHeadCharges").val();
+  var deposite = $("input#deposite").val();
+  var adults = $("input#adults").val();
+  var child = $("input#child").val();
+  var note = $("textarea#note").val();
+  $.ajax({
+      type: "POST",
+      url: "updatebooking.php",
+      data:{ 'customerName':customerName,
+            'contactNo':contactNo,
+            'address':address, 
+            'reservationDate':reservationDate,
+              'persons' : persons ,
+              'reservationTime' : reservationTime ,
+              'totalAmount': totalAmount,
+              'minimumPayment' : minimumPayment,
+              'paymentMode' : paymentMode ,
+              'zone': zone ,
+              'perHeadCharges' : perHeadCharges,
+              'deposite' : deposite,
+              'adults' : adults,
+              'child' : child,
+              'note' : note,
+              'bookingId' : bookingId
+            },
+      success: function(data) {
+          if(data == "success"){
+            alert('Edit made successfully :)');
+           //window.location.reload(true);
+           window.open("dashboard.php","_self");
+          }else{
+              alert('Error Occured while edit booking'+data);
+          }
+          
+      }
+    });
+  }
+
+
+
+function numbers() {
+          //alert("Event Keycode : "+event.keyCode);
+             if ((event.keyCode >= 48 && event.keyCode <= 57) 
+              || (event.keyCode == 8 || event.keyCode == 46) )
+                 return true;
+             else
+              alert('Number Only');
+                 return false;
+         }
 </script>
 
 

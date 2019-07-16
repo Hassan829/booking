@@ -1,9 +1,10 @@
 <?php
 require "includes/functions.php";
-if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){ 
- $reviewList =[];
+if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole']) && $_SESSION['userRole'] == 1){ 
 
-  $reviewList = getReviews();
+  $notesList = getNotes();
+
+
 
 ?>
 <!DOCTYPE html>
@@ -21,7 +22,7 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
   <!-- Ionicons -->
   <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css">
   <link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
- <link rel="stylesheet" type="text/css" href="plugins/iCheck/all.css">
+ 
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -150,7 +151,7 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-       Reviews List
+       Notes
       </h1>
   
     </section>
@@ -163,34 +164,17 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
         <div class="box-header with-border">
           
         </div>
-        <!-- <div class="box-body">
+        <div class="box-body">
           <div class="row">
           <div class="col-sm-12">
-            <form action="bookinglist.php" method="GET">
+            <form >
             <div class="form-group">
-              <label for="reservationDate" class="col-sm-2 control-label">Reservation Date</label>
-              <div class="col-sm-2">
-                <input type="date" class="form-control" id="reservationDate" name="reservationDate" placeholder="Contact Detail">
-              </div>
-  
-
-              <label for="reservationDate" class="col-sm-1 control-label">Status</label>
-              <div class="col-sm-2">
-              <select class="form-control"  name="status" id="status">
-                          <option value="-1">All</option>
-                      <?php  foreach($statusList as $status): ?>
-                          <option value="<?php echo $status->statusid;?>">  <?php echo $status->value; ?></option>
-
-                      <?php  endforeach; ?>
-                  </select>
-                </div>
-
-                <label for="phone" class="col-sm-1 control-label">Phone#</label>
-              <div class="col-sm-2">
-                <input type="tel" class="form-control " id="phone" name="phone" placeholder="Phone Number">
+              <label for="reservationDate" class="col-sm-2 control-label" style="text-align: right;">Note</label>
+              <div class="col-sm-6">
+                <textarea name="note" rows="5" cols="80" id="note"> </textarea>
               </div>
                  <div class="col-sm-2">
-                 <input type="submit" class="btn btn-info" name="submit" value="Submit">
+                 <input type="button" class="btn btn-info" name="submit" onclick="addNote();" value="Submit">
                  </div>
 
              </div>
@@ -199,7 +183,7 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
             </form>
             </div>
           </div>
-        </div> -->
+        </div>
      
         <!-- Table start -->
 
@@ -211,26 +195,20 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
                 <thead>
                 <tr>
                   <th>Sr. No.</th>
-                  <th>Name</th>
-                  <th>Phone No</th>
-                  <th>Food, Taste & Quality</th>
-                  <th>Hygiene & standards</th>
-                  <th>Staff & Management</th>
-                 
+                  <th>Note</th>
+                  <th>Created Date Time</th>
                 </tr>
                 </thead>
                 <tbody>
                    <?php  $counter = 1 ;
                    if(1==1){
-                      foreach($reviewList as $review):?>
+
+
+                      foreach($notesList as $note):?>
                         <tr>
                             <td> <?php echo $counter; ?> </td>
-                            <td> <?php echo $review->customername; ?> </td>
-                            <td> <?php echo $review->contactno; ?> </td>
-                            <td> <?php echo $review->foodtastequality; ?> </td>
-                            <td> <?php echo $review->hygienestandards; ?></td>
-                            <td> <?php echo $review->staffmanagement?></td>                          
-                            
+                            <td> <?php echo $note->note; ?> </td>
+                            <td> <?php echo $note->createdatetime; ?> </td>
                         </tr>
                         <?php
                       $counter++ ;
@@ -242,12 +220,8 @@ if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){
                 <tfoot>
                 <tr>
                   <th>Sr. No.</th>
-                  <th>Name</th>
-                  <th>Phone No</th>
-                  <th>Food, Taste & Quality</th>
-                  <th>Hygiene & standards</th>
-                  <th>Staff & Management</th>
-
+                  <th>Note</th>
+                  <th>Created Date Time</th>
                 </tr>
                 </tfoot>
               </table>
@@ -502,6 +476,61 @@ https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
+
+
+
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#example1').DataTable( {
+   
+        dom: 'Bfrtip',
+        buttons: [
+{ "extend": 'print', "text":'<i class="fa fa-print"></i>',"className": 'btn btn-default pull-left' }
+
+        ]
+    } );
+} );
+</script>
+
+<script>
+  $(document).ready(function () {
+    $('.sidebar-menu').tree()
+  })
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#example').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'print'
+        ]
+    } );
+} );
+</script>
+
+<script>
+
+  function addNote(){
+  var  note = $("textarea#note").val();
+  $.ajax({
+      type: "POST",
+      url: "addnote.php",
+      data:{ 'note':note,
+            },
+      success: function(data) {
+         // alert(data);
+           var result = $.trim(data);
+          if(result === "success")
+            window.location.reload(true);
+          else
+            alert(result);
+          
+      }
+    });
+  }
+
 
 
 

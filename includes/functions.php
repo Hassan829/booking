@@ -1,4 +1,5 @@
 <?php
+session_start();
 require "./config/config.php";
 date_default_timezone_set('Europe/London');
 
@@ -76,19 +77,52 @@ function updateBookingStatus($status, $bookingid){
 		return $response;
 }
 
-function addBooking($customerName,$contactNo,$address,$reservationDate,$persons,$adults,$child,$reservationTime,$perHeadCharges,$deposite,$totalAmount,$minimumPayment,$paymentMode,$zone,$status){
+function addBooking($customerName,$contactNo,$address,$reservationDate,$persons,$adults,$child,$reservationTime,$perHeadCharges,$deposite,$totalAmount,$minimumPayment,$paymentMode,$zone,$status,$note){
 	try {
+		
 			global $connection;
-			$sql = 'INSERT INTO tblbookings(customerName,contactNo,address,reservationDate,persons,adults,child,reservationTime,perHeadCharges,deposite,totalAmount,minimumPayment,paymentMode,zone,status) VALUES(:customerName,:contactNo,:address,:reservationDate,:persons,:adults,:child,:reservationTime,:perHeadCharges,:deposite,:totalAmount,:minimumPayment,:paymentMode,:zone,:status)';
+			$sql = 'INSERT INTO tblbookings(customerName,contactNo,address,reservationDate,persons,adults,child,reservationTime,perHeadCharges,deposite,totalAmount,minimumPayment,paymentMode,zone,status,createdtimedate,updatedtimedate,note) VALUES(:customerName,:contactNo,:address,:reservationDate,:persons,:adults,:child,:reservationTime,:perHeadCharges,:deposite,:totalAmount,:minimumPayment,:paymentMode,:zone,:status,:createdtimedate,:updatedtimedate,:note)';
 			
 		   	 // run your code here
 				$statement = $connection->prepare($sql);
-				if ($statement->execute([':customerName' => $customerName,':contactNo' => $contactNo,':address' => $address,':reservationDate' => $reservationDate,':persons' => $persons, ':adults' => $adults, ':child' => $child, ':reservationTime' => $reservationTime, ':perHeadCharges' => $perHeadCharges, ':deposite' => $deposite, ':totalAmount' => $totalAmount, ':minimumPayment' => $minimumPayment, ':paymentMode' => $paymentMode, ':zone' => $zone, ':status' => $status])) {
+				//$statement->debugDumpParams();
+				if ($statement->execute([':customerName' => $customerName,':contactNo' => $contactNo,':address' => $address,':reservationDate' => $reservationDate,':persons' => $persons, ':adults' => $adults, ':child' => $child, ':reservationTime' => $reservationTime, ':perHeadCharges' => $perHeadCharges, ':deposite' => $deposite, ':totalAmount' => $totalAmount, ':minimumPayment' => $minimumPayment, ':paymentMode' => $paymentMode, ':zone' => $zone, ':status' => $status, ':createdtimedate' => date('y:m:d h:i:s'), 
+					':updatedtimedate' => date('y:m:d h:i:s'),':note' => $note])) {
 					//echo "success";
+
 					$response = "success";
 				}else{
 					$errors = $statement->errorInfo();
-					$response = "error";//.$errors[2];
+					$response = "error".$errors[2];
+					echo $response;
+				}
+			}
+			catch (exception $e) {
+			    //code to handle the exception
+			}
+			finally {
+			    //optional code that always runs
+			   // $connection = null ;
+			}
+			return $response;
+}
+function updateBooking($bookingId,$customerName,$contactNo,$address,$reservationDate,$persons,$adults,$child,$reservationTime,$perHeadCharges,$deposite,$totalAmount,$minimumPayment,$paymentMode,$zone,$note){
+	try {
+		
+			global $connection;
+			$sql = 'UPDATE tblbookings SET customerName=:customerName,contactNo=:contactNo,address=:address, reservationDate=:reservationDate,persons=:persons,adults=:adults,child=:child,reservationTime=:reservationTime,perHeadCharges=:perHeadCharges,deposite=:deposite,totalAmount=:totalAmount,minimumPayment=:minimumPayment,paymentMode=:paymentMode,zone=:zone,updatedtimedate=:updatedtimedate,note=:note where bookingId =:bookingId';
+			
+		   	 // run your code here
+				$statement = $connection->prepare($sql);
+				//$statement->debugDumpParams();
+				if ($statement->execute([':customerName' => $customerName,':contactNo' => $contactNo,':address' => $address,':reservationDate' => $reservationDate,':persons' => $persons, ':adults' => $adults, ':child' => $child, ':reservationTime' => $reservationTime, ':perHeadCharges' => $perHeadCharges, ':deposite' => $deposite, ':totalAmount' => $totalAmount, ':minimumPayment' => $minimumPayment, ':paymentMode' => $paymentMode, ':zone' => $zone,':updatedtimedate' => date('y:m:d h:i:s'), ':note' => $note,
+					':bookingId' => $bookingId])) {
+					//echo "success";
+
+					$response = "success";
+				}else{
+					$errors = $statement->errorInfo();
+					$response = "error".$errors[2];
 					echo $response;
 				}
 			}
@@ -118,7 +152,7 @@ function getBookingDetialById($bookingId){
 
 
 
-function updateBooking($customerName,$contactNo,$address,$reservationDate,$persons,$adults,$child,$reservationTime,$perHeadCharges,$deposite,$totalAmount,$minimumPayment,$paymentMode,$zone,$status){
+/*function updateBooking($customerName,$contactNo,$address,$reservationDate,$persons,$adults,$child,$reservationTime,$perHeadCharges,$deposite,$totalAmount,$minimumPayment,$paymentMode,$zone,$status){
 	try {
 			global $connection;
 			$sql = 'INSERT INTO tblbookings(customerName,contactNo,address,reservationDate,persons,adults,child,reservationTime,perHeadCharges,deposite,totalAmount,minimumPayment,paymentMode,zone,status) VALUES(:customerName,:contactNo,:address,:reservationDate,:persons,:adults,:child,:reservationTime,:perHeadCharges,:deposite,:totalAmount,:minimumPayment,:paymentMode,:zone,:status)';
@@ -142,7 +176,7 @@ function updateBooking($customerName,$contactNo,$address,$reservationDate,$perso
 			   // $connection = null ;
 			}
 			return $response;
-}
+}*/
 
 
 function getAvailableSeats($reservationdate){
@@ -200,5 +234,86 @@ function addReview($customerName,$contactNo,$foodTasteQuality,$hygieneStandards,
 			return $response;
 }
 
+function login ($userName, $password){
+	global $connection;
+	$response = "error";
+	$sql ="SELECT * FROM tblusers WHERE username=:username and password=:password";
+		try {
+			$statement = $connection->prepare($sql);
+			if ($statement->execute([':username' => $userName,':password' => md5($password)])) {
+				$row = $statement->fetch();
+				if($statement->rowCount() > 0) {
+					$response = "success";	
+					$_SESSION['userRole'] = $row['role'] ;
+					$_SESSION['userRoleName'] = $row['username'] ;
+			}else{
+					$response = "Invalid Username & Password";
+					
+				}
+			}else{
+				$response = "Invalid Username & Password";
+			}
+		}
+		catch (exception $e) {
+		    //code to handle the exception
+		}
+		finally {
+		    //optional code that always runs
+		   // $connection = null ;
+		}
+		return $response;
+}
+
+
+function getNotes(){
+	global $connection;
+	$sql = 'SELECT * FROM tblnotes';
+	$statement = $connection->prepare($sql);
+	$statement->execute();
+	$notesList = $statement->fetchAll(PDO::FETCH_OBJ);
+	return $notesList;
+}
+
+function addNote($note){
+	try {
+			global $connection;
+			$sql = 'INSERT INTO tblnotes(note,createdatetime,updatedatetime) VALUES(:note,:createdatetime,:updatedatetime)';
+			
+		   	 // run your code here
+				$statement = $connection->prepare($sql);
+				if ($statement->execute([':note' => $note,':createdatetime' =>date('y:m:d h:i:s'),':updatedatetime' => date('y:m:d h:i:s')])) {
+					$response = "success";
+				}else{
+					$errors = $statement->errorInfo();
+					$response = "error11".$errors[2];
+				}
+			}
+			catch (exception $e) {
+			    //code to handle the exception
+			}
+			finally {
+			    //optional code that always runs
+			   // $connection = null ;
+			}
+			return $response;
+}  
+
+function deleteBooking($bookingId){
+	global $connection;
+	if($bookingId>0){
+		$sql = "DELETE FROM tblbookings WHERE bookingid = ".$bookingId;
+		$statement = $connection->prepare($sql);
+		if($statement->execute()){
+			$response="success";
+		}else{
+			$response = "Unable to delete record";
+		}
+		
+	}else{
+		$response = "Invalid details";
+	}
+	
+	return $response;
+}
 
 ?>

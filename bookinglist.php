@@ -1,5 +1,6 @@
 <?php
 require "includes/functions.php";
+if(isset($_SESSION['userRole']) && !empty($_SESSION['userRole'])){ 
  $bookingList =[];
 if(isset($_GET['reservationDate'])   || (isset($_GET['phone'])) || isset($_GET['status']) ){
   $bookingList = getBookingsByDate($_GET['reservationDate'],$_GET['status'],$_GET['phone']);
@@ -64,13 +65,15 @@ $statusList = getStatusList();
     <!-- Logo -->
     <a href="/" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
-     
+     <span class="logo-mini">RS</span>
       <!-- logo for regular state and mobile devices -->
       <span class="logo-lg">Reservation System</span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
-    
+    <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
     </nav>
   </header>
 
@@ -82,9 +85,11 @@ $statusList = getStatusList();
     <section class="sidebar">
       <!-- Sidebar user panel -->
       <div class="user-panel">
-       
-        <div class="text-center">
-          <p style="color: white;">Admin</p>
+        <div class="pull-left image">
+          <img src="dist/img/avatar5.png" class="img-circle" alt="User Image">
+        </div>
+        <div class="pull-left info">
+          <p style="color: white; text-transform: uppercase;"><?php echo $_SESSION['userRoleName']; ?></p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -113,6 +118,20 @@ $statusList = getStatusList();
         <li>
           <a href="reviewlist.php">
             <i class="fa fa-list"></i> <span>Reviews List</span>
+           
+          </a>
+        </li>
+        <?php if($_SESSION['userRole'] == 1) {?>
+        <li>
+          <a href="notes.php">
+            <i class="fa fa-list"></i> <span>Notes</span>
+           
+          </a>
+        </li>
+        <?php }?>
+        <li>
+          <a href="logout.php">
+            <i class="fa fa-sign-out"></i> <span>Logout</span>
            
           </a>
         </li>
@@ -212,17 +231,26 @@ $statusList = getStatusList();
                       foreach($bookingList as $booking):?>
                         <tr>
                             <td> <?php echo $counter; ?> </td>
-                            <td>   <a href="#" class="btn-link"> <?php echo $booking->customername; ?> </a></td>
+                             <td> <?php echo $booking->customername; ?>  <a href="print.php?bookingId=<?php echo $booking->bookingid; ?>" target=_blank class="btn-link"> <i class="fa fa-print"></i> </a></td>
                             <td> <?php echo $booking->contactno; ?> </td>
                             <td> <?php echo $booking->persons; ?>-<?php echo $booking->adults; ?>-<?php echo $booking->child; ?> </td>
                             <td><?php echo $booking->reservationdate?></td>
                             <td> <?php echo substr($booking->reservationtime,0,5)?></td>
                             <td> <?php echo substr($booking->checkin,0,5); ?> </td>
                             
-                            <td>
+                            <!-- <td>
                               <?php echo $booking->value; ?>
                              
                               <input type="hidden" name="bookingId<?php echo $booking->bookingid; ?>" id="bookingId<?php echo $booking->bookingid; ?>" value="<?php echo $booking->bookingid; ?>">
+                            </td> -->
+                            <td>
+                            <?php if($_SESSION['userRole'] == 1) {?>
+                              <a href="editbooking.php?bookingId=<?php echo $booking->bookingid; ?>">Edit</a> / 
+                            <?php } ?>
+                            <a href="viewbookingdetails.php?bookingId=<?php echo $booking->bookingid; ?>">View</a> 
+                            <?php if($_SESSION['userRole'] == 1) {?>
+                            / <a href="" onclick="deleteBooking(<?php echo $booking->bookingid; ?>);">Delete</a>
+                            <?php }?>
                             </td>
 
                         </tr>
@@ -272,7 +300,7 @@ $statusList = getStatusList();
     <div class="pull-right hidden-xs">
       <b>Version</b> 1
     </div>
-    <strong>Copyright &copy; 2019 <a href="https://devleadz.com">DevLeadz (Pvt) Ltd.</a></strong> All rights
+    <strong>Copyright &copy; 2019 <!-- <a href="https://devleadz.com">DevLeadz (Pvt) Ltd.</a> --></strong> All rights
     reserved.
   </footer>
 
@@ -511,7 +539,14 @@ $(document).ready(function() {
         buttons: [
 { "extend": 'print', "text":'<i class="fa fa-print"></i>',"className": 'btn btn-default pull-left' }
 
-        ]
+        ],
+       'paging'      : true,
+      'lengthChange': false,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : false, 
+      "scrollX": true
     } );
 } );
 </script>
@@ -523,14 +558,14 @@ $(document).ready(function() {
 </script>
 
 <script type="text/javascript">
-$(document).ready(function() {
+/*$(document).ready(function() {
     $('#example').DataTable( {
         dom: 'Bfrtip',
         buttons: [
             'print'
         ]
     } );
-} );
+} );*/
 </script>
 <script>
 
@@ -633,3 +668,6 @@ function changeBookingStatus(bookingId){
 
 </body>
 </html>
+<?php }else{
+    header('location: index.php');
+    } ?>
